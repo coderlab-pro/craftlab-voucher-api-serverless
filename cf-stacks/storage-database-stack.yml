@@ -51,7 +51,7 @@ Resources:
   DatabaseClusterSSM:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join [ '', [ /geo-jobs/, !Ref Env, /db/url ] ]
+      Name: !Join [ '', [ /craftlab-voucher-api-serverless/, !Ref Env, /db/url ] ]
       Type: String
       Value:
         Fn::Join:
@@ -70,7 +70,7 @@ Resources:
   DatabaseClusterIdentifierSSM:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join [ '', [ /geo-jobs/, !Ref Env, /db/identifier ] ]
+      Name: !Join [ '', [ /craftlab-voucher-api-serverless/, !Ref Env, /db/identifier ] ]
       Type: String
       Value: !GetAtt DatabaseCluster.Endpoint.Address
 
