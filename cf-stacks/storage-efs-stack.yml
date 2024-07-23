@@ -1,12 +1,12 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: craftlab-voucher-api-serverless - Storage EFS
+Description: craftlab-voucher - Storage EFS
 
 Parameters:
   Env:
     Type: String
   FilesystemName:
     Type: String
-    Default: craftlab-voucher-api-serverless-efs
+    Default: craftlab-voucher-efs
 
 Resources:
   Filesystem:
@@ -33,7 +33,7 @@ Resources:
   AccessPointArnSSM:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join [ '', [ /craftlab-voucher-api-serverless/, !Ref Env, /efs/access-point/arn ] ]
+      Name: !Join [ '', [ /craftlab-voucher/, !Ref Env, /efs/access-point/arn ] ]
       Type: String
       Value: !GetAtt AccessPoint.Arn
 

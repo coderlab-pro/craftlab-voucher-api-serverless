@@ -49,7 +49,7 @@ jobs:
       - run: sam build
 
       - name: Deploy application
-        run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name ${{ github.ref_name }}-compute-craftlab-voucher-api-serverless --capabilities CAPABILITY_IAM --parameter-overrides Env=${{ github.ref_name }} --resolve-s3 --tags app=craftlab-voucher-api-serverless env=${{ github.ref_name }} user:poja=craftlab-voucher-api-serverless
+        run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name ${{ github.ref_name }}-compute-craftlab-voucher --capabilities CAPABILITY_IAM --parameter-overrides Env=${{ github.ref_name }} --resolve-s3 --tags app=craftlab-voucher env=${{ github.ref_name }} user:poja=craftlab-voucher
 
   health-check-infra:
     needs: [deploy-api]

@@ -9,7 +9,7 @@ Resources:
   ExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Join [ '', [ craftlab-voucher-api-serverless-, !Ref Env, -ExecutionRole ] ]
+      RoleName: !Join [ '', [ craftlab-voucher-, !Ref Env, -ExecutionRole ] ]
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
@@ -22,6 +22,6 @@ Resources:
   ExecutionRoleArnSSM:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: !Join [ '',[ /craftlab-voucher-api-serverless/ , !Ref Env , /execution/role-arn ] ]
+      Name: !Join [ '',[ /craftlab-voucher/ , !Ref Env , /execution/role-arn ] ]
       Type: String
       Value: !GetAtt ExecutionRole.Arn
