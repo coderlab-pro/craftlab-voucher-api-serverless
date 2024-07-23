@@ -19,8 +19,8 @@ Resources:
   DBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
-      DBSubnetGroupDescription: !Join [ '', [ Subnet group for geo-jobs , !Ref Env ] ]
-      DBSubnetGroupName: !Join [ '', [ geo-jobs-, !Ref Env, -subnet-group ] ]
+      DBSubnetGroupDescription: !Join [ '', [ Subnet group for craftlab-voucher-api-serverless , !Ref Env ] ]
+      DBSubnetGroupName: !Join [ '', [ craftlab-voucher-api-serverless-, !Ref Env, -subnet-group ] ]
       SubnetIds:
         - !Sub '{{resolve:ssm:/craftlab-voucher-api-serverless/private/subnet1/id}}'
         - !Sub '{{resolve:ssm:/craftlab-voucher-api-serverless/private/subnet2/id}}'
