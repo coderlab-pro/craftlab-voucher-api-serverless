@@ -1,6 +1,5 @@
 package pro.craftlab.voucher.endpoint.rest.controller;
 
-
 import lombok.AllArgsConstructor;
 import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
 import org.springframework.http.ResponseEntity;
