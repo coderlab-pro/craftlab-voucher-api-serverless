@@ -21,10 +21,10 @@ public class FacadeIT {
   static void beforeAll() {
     POSTGRES_CONF.start();
     getRuntime()
-            // Do _not_ stop postgresTest in afterAll as it is shared between multiple subclasses of
-            // FacadeTest.
-            // Doing so might cause some subclasses to stop it while other ones are still using it!
-            .addShutdownHook(new Thread(POSTGRES_CONF::stop));
+        // Do _not_ stop postgresTest in afterAll as it is shared between multiple subclasses of
+        // FacadeTest.
+        // Doing so might cause some subclasses to stop it while other ones are still using it!
+        .addShutdownHook(new Thread(POSTGRES_CONF::stop));
   }
 
   @SneakyThrows
