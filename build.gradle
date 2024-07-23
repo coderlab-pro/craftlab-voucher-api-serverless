@@ -9,8 +9,6 @@ plugins {
     id 'org.openapi.generator' version '7.4.0'
 
     id 'jacoco'
-
-    
 }
 
 jacoco {
@@ -18,9 +16,8 @@ jacoco {
 }
 
 
-
 repositories {
-
+    mavenLocal()
     mavenCentral()
 }
 
@@ -36,6 +33,44 @@ configurations {
     }
 }
 
+
+task generateJavaClient(type: GenerateTask) {
+    generatorName = "java"
+    inputSpec = "$rootDir/doc/api.yml".toString()
+    outputDir = "$buildDir/gen".toString()
+    apiPackage = "pro.craftlab.voucher.endpoint.rest.api"
+    invokerPackage = "pro.craftlab.voucher.endpoint.rest.client"
+    modelPackage = "pro.craftlab.voucher.endpoint.rest.model"
+
+    configOptions = [
+            serializableModel   : "true",
+            serializationLibrary: "jackson",
+            dateLibrary         : "custom"
+    ]
+    typeMappings = [
+            // What date-time type to use when? https://i.stack.imgur.com/QPhGW.png
+            Date    : "java.time.LocalDate",
+            DateTime: "java.time.Instant",
+    ]
+    library = "native"
+
+    groupId = 'pro.craftlab'
+    id = 'voucher-gen'
+    skipValidateSpec = false
+    logToStderr = true
+    generateAliasAsModel = false
+    enablePostProcessFile = false
+}
+
+task publishJavaClientToMavenLocal(type: Exec, dependsOn: generateJavaClient) {
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine './.shell/publish_gen_to_maven_local.bat'
+    } else {
+        commandLine './.shell/publish_gen_to_maven_local.sh'
+    }
+}
+
+tasks.compileJava.dependsOn publishJavaClientToMavenLocal
 
 
 test {
@@ -140,10 +175,11 @@ dependencies {
     implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
     implementation 'io.swagger:swagger-annotations:1.6.12'
 
+    implementation 'pro.craftlab:voucher-gen:latest'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.testcontainers:junit-jupiter:1.19.1'
     testImplementation 'org.junit-pioneer:junit-pioneer:2.2.0'
-
 
 
 }
