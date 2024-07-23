@@ -35,6 +35,7 @@ public class FacadeIT {
     new EventConf().configureProperties(registry);
     new BucketConf().configureProperties(registry);
     new EmailConf().configureProperties(registry);
+    new FlywayMigrationConf().configureProperties(registry);
 
     try {
       var envConfClazz = Class.forName("pro.craftlab.voucher.conf.EnvConf");
