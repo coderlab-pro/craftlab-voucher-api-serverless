@@ -1,40 +1,28 @@
 package pro.craftlab.voucher.endpoint.rest.controller;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
-import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pro.craftlab.voucher.PojaGenerated;
-import pro.craftlab.voucher.repository.CustomerRepository;
-import pro.craftlab.voucher.repository.model.Customer;
+import pro.craftlab.voucher.endpoint.rest.controller.mapper.CustomerRestMapper;
+import pro.craftlab.voucher.endpoint.rest.model.Customer;
 import pro.craftlab.voucher.service.event.CustomerService;
 
 @PojaGenerated
 @RestController
 @AllArgsConstructor
 public class CustomerController {
-
-  private final PageableHandlerMethodArgumentResolverCustomizer pageableCustomizer;
-  private CustomerRepository customerRepository;
   private CustomerService customerService;
+  private CustomerRestMapper customerRestMapper;
 
   @GetMapping("/customer/{id}")
-  public ResponseEntity<Customer> getCustomerById(@PathVariable String id) {
-    Customer customer = customerService.getCustomerById(id);
-    return ResponseEntity.ok(customer);
+  public Customer getCustomerById(@PathVariable String id) {
+    return customerRestMapper.toRest(customerService.getCustomerById(id));
   }
 
-  @PostMapping
-  public Customer createCustomer(@RequestBody Customer customer) {
-    return customerService.createCustomer(customer);
-  }
-
-  @PutMapping("/customers/{id}")
-  public ResponseEntity<Customer> updateCustomer(
-      @PathVariable String id, @RequestBody Customer customerDetails) {
-    Customer updatedCustomer = customerService.updateCustomer(id, customerDetails);
-    updatedCustomer.setName(customerDetails.getName());
-    updatedCustomer.setMail(customerDetails.getMail());
-    return ResponseEntity.ok(updatedCustomer);
+  @PutMapping("/customers")
+  public List<Customer> updateCustomer(@RequestBody List<Customer> customerDetails) {
+    var customers = customerDetails.stream().map(customerRestMapper::toDomain).toList();
+    return customerService.saveAll(customers).stream().map(customerRestMapper::toRest).toList();
   }
 }

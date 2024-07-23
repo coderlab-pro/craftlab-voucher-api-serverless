@@ -16,17 +16,8 @@ public class CustomerService {
     return customerRepository.findAll(pageable).stream().toList();
   }
 
-  public Customer createCustomer(Customer customer) {
-    return customerRepository.save(customer);
-  }
-
-  public Customer updateCustomer(String id, Customer customerDetails) {
-    Customer customer;
-    customer =
-        customerRepository
-            .findById(id)
-            .orElseThrow(() -> new RuntimeException("Customer not found"));
-    return customerRepository.save(customer);
+  public List<Customer> saveAll(List<Customer> customers) {
+    return customerRepository.saveAll(customers);
   }
 
   public Customer getCustomerById(String id) {

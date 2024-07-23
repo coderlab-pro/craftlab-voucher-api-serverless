@@ -2,6 +2,7 @@ package pro.craftlab.voucher.endpoint;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +36,7 @@ public class CustomerServiceIT extends FacadeIT {
   }
 
   @Test
-  void update_customer() {
-    var actual = subject.updateCustomer(id, updated());
+  void save_customers() {
+    var actual = subject.saveAll(List.of(updated()));
   }
 }
