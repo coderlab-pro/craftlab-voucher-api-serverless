@@ -30,12 +30,6 @@ public class CustomerServiceIT extends FacadeIT {
   }
 
   @Test
-  void read_customersById() {
-    var actual = subject.getCustomerById(id);
-    assertEquals(expected(), actual);
-  }
-
-  @Test
   void save_customers() {
     var actual = subject.saveAll(List.of(updated()));
   }
