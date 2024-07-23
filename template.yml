@@ -49,9 +49,7 @@ Resources:
       MemorySize: 2048
       Timeout: 30
       Role: !Sub '{{resolve:ssm:/craftlab-voucher-api-serverless/${Env}/execution/role-arn}}'
-      FileSystemConfigs:
-        - Arn: !Sub '{{resolve:ssm:/craftlab-voucher-api-serverless/${Env}/efs/access-point/arn}}'
-          LocalMountPath: /mnt/efs
+
       Events:
         ApiCall:
           Type: Api
@@ -68,9 +66,7 @@ Resources:
       MemorySize: 1024
       Timeout: 600 #note(sqs-visibility)
       Role: !Sub '{{resolve:ssm:/craftlab-voucher-api-serverless/${Env}/execution/role-arn}}'
-      FileSystemConfigs:
-        - Arn: !Sub '{{resolve:ssm:/craftlab-voucher-api-serverless/${Env}/efs/access-point/arn}}'
-          LocalMountPath: /mnt/efs
+
       Events:
         AllEvents:
           Type: SQS
@@ -85,9 +81,7 @@ Resources:
       MemorySize: 1024
       Timeout: 600 #note(sqs-visibility)
       Role: !Sub '{{resolve:ssm:/craftlab-voucher-api-serverless/${Env}/execution/role-arn}}'
-      FileSystemConfigs:
-        - Arn: !Sub '{{resolve:ssm:/craftlab-voucher-api-serverless/${Env}/efs/access-point/arn}}'
-          LocalMountPath: /mnt/efs
+
       Events:
         AllEvents:
           Type: SQS
