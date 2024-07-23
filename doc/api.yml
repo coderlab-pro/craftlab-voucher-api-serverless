@@ -1,0 +1,24 @@
+openapi: 3.0.3
+
+info:
+  title: craftlab-voucher-api
+  description: Generate voucher for craftlab's customers
+  version: 'latest'
+
+servers:
+  - url: 'https://localhost:8080'
+
+paths:
+  '/ping':
+    get:
+      operationId: ping
+      tags:
+        - Health
+      responses:
+        200:
+          description: pong
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: pong
