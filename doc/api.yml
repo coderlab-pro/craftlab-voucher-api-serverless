@@ -60,9 +60,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/Customer'
 
-  /customer/{id}/code_voucher:
+  /customers/{id}/vouchers:
     get:
-      operationId: getCustomerWithVouchers
+      operationId: getCustomerVouchers
       tags:
         - Vouchers
       parameters:
@@ -77,9 +77,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Customer'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Voucher'
     put:
-      operationId: generateVoucherForCustomer
+      operationId: generateVouchersForCustomer
       tags:
         - Vouchers
       parameters:
@@ -105,7 +107,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Customer'
+                  $ref: '#/components/schemas/Voucher'
 
 components:
   schemas:
@@ -118,3 +120,18 @@ components:
           type: string
         mail:
           type: string
+    Voucher:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        validation:
+          type: string
+          format: date-time
+        expiration:
+          type: string
+          format: date-time
+        customer:
+          $ref: '#/components/schemas/Voucher'
