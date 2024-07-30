@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 import java.util.HashSet;
 import java.util.Set;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 @Data
 @Entity
 @AllArgsConstructor
@@ -22,7 +24,7 @@ public class Customer {
   private String name;
   private String mail;
 
-  @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = LAZY)
   private Set<Voucher> vouchers = new HashSet<>();
 
 }

@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import java.sql.Date;
+import java.time.Instant;
 
 @Entity
 @AllArgsConstructor
@@ -19,7 +20,7 @@ public class Voucher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id private String id;
     private String code;
-    private Date validation;
+    private Instant validation;
     private Date expiration;
 
     @ManyToOne

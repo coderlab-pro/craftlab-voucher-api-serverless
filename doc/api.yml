@@ -41,43 +41,24 @@ paths:
       operationId: updateCustomer
       tags:
         - Customers
-      parameters:
-        - name: customerId
-          in: path
-          required: true
-          schema:
-            type: string
       requestBody:
         description: Customer that needs to be updated
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Customer'
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                name:
-                  description: Updated name of the customer
-                  type: string
-                mail:
-                  description: Updated mail of the customer
-                  type: string
-                  required: [ mail ]
+              type: array
+              items:
+                $ref: '#/components/schemas/Customer'
       responses:
         200:
           description: Customer updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Customer'
-        201:
-          description: Customer created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Customer'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
 components:
   schemas:
     Customer:
