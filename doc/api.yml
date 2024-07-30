@@ -41,43 +41,74 @@ paths:
       operationId: updateCustomer
       tags:
         - Customers
-      parameters:
-        - name: customerId
-          in: path
-          required: true
-          schema:
-            type: string
       requestBody:
         description: Customer that needs to be updated
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Customer'
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                name:
-                  description: Updated name of the customer
-                  type: string
-                mail:
-                  description: Updated mail of the customer
-                  type: string
-                  required: [ mail ]
+              type: array
+              items:
+                $ref: '#/components/schemas/Customer'
       responses:
         200:
           description: Customer updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Customer'
-        201:
-          description: Customer created
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+
+  /customers/{id}/vouchers:
+    get:
+      operationId: getCustomerVouchers
+      tags:
+        - Vouchers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Customer with vouchers
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Customer'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Voucher'
+    put:
+      operationId: generateVouchersForCustomer
+      tags:
+        - Vouchers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: List of customers to generate vouchers for
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CreateVoucher'
+      responses:
+        200:
+          description: Vouchers successfully generated
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Voucher'
+
 components:
   schemas:
     Customer:
@@ -89,3 +120,23 @@ components:
           type: string
         mail:
           type: string
+    CreateVoucher:
+      type: object
+      properties:
+        validationDatetime:
+          type: string
+          format: date-time
+        creationDatetime:
+          type: string
+          format: date-time
+    Voucher:
+      allOf:
+        - $ref: '#/components/schemas/CreateVoucher'
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        customer:
+          $ref: '#/components/schemas/Voucher'
