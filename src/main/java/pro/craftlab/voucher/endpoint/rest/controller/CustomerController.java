@@ -7,6 +7,7 @@ import pro.craftlab.voucher.PojaGenerated;
 import pro.craftlab.voucher.endpoint.rest.controller.mapper.CustomerRestMapper;
 import pro.craftlab.voucher.endpoint.rest.model.Customer;
 import pro.craftlab.voucher.service.event.CustomerService;
+import pro.craftlab.voucher.service.event.VoucherService;
 
 @PojaGenerated
 @RestController
@@ -14,6 +15,7 @@ import pro.craftlab.voucher.service.event.CustomerService;
 public class CustomerController {
   private CustomerService customerService;
   private CustomerRestMapper customerRestMapper;
+  private VoucherService voucherGeneratorService;
 
   @GetMapping("/customer/{id}")
   public Customer getCustomerById(@PathVariable String id) {
@@ -24,5 +26,10 @@ public class CustomerController {
   public List<Customer> updateCustomer(@RequestBody List<Customer> customerDetails) {
     var customers = customerDetails.stream().map(customerRestMapper::toDomain).toList();
     return customerService.saveAll(customers).stream().map(customerRestMapper::toRest).toList();
+  }
+
+  @PostMapping("/customer/{id}/code_voucher")
+  public String generateVoucherCodeForCustomer(@PathVariable String id) {
+    return voucherGeneratorService.generateVoucherCodeForCustomer(id);
   }
 }

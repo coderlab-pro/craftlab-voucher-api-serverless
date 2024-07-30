@@ -1,8 +1,8 @@
 package pro.craftlab.voucher.endpoint;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.List;
+import java.util.Set;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -12,14 +12,22 @@ import pro.craftlab.voucher.service.event.CustomerService;
 
 public class CustomerServiceIT extends FacadeIT {
   @Autowired CustomerService subject;
-  private static final String id = "customer-id-1";
-
-  Customer expected() {
-    return new Customer("customer-id-1", "Paul Updated", "paul.updated@gmail.com");
+  private Customer expected() {
+    return Customer.builder()
+            .id("customer-id-1")
+            .name("Paul Updated")
+            .mail("paul.updated@gmail.com")
+            .vouchers(Set.of())
+            .build();
   }
 
-  Customer updated() {
-    return new Customer("customer-id-1", "Paul", "paul@gmail.com");
+  private Customer updated() {
+    return Customer.builder()
+            .id("customer-id-1")
+            .name("Paul")
+            .mail("paul@gmail.com")
+            .vouchers(Set.of())
+            .build();
   }
 
   @Test
