@@ -1,4 +1,4 @@
-package pro.craftlab.voucher.service.event;
+package pro.craftlab.voucher.service;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
