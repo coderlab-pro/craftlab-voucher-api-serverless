@@ -21,7 +21,7 @@ public class Voucher {
     @Id private String id;
     private String code;
     private Instant validation;
-    private Date expiration;
+    private Instant expiration;
 
     @ManyToOne
     private Customer customer;

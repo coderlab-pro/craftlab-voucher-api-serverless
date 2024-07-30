@@ -59,6 +59,54 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Customer'
+
+  /customer/{id}/code_voucher:
+    get:
+      operationId: getCustomerWithVouchers
+      tags:
+        - Vouchers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Customer with vouchers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+    put:
+      operationId: generateVoucherForCustomer
+      tags:
+        - Vouchers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: List of customers to generate vouchers for
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Customer'
+      responses:
+        200:
+          description: Vouchers successfully generated
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+
 components:
   schemas:
     Customer:
