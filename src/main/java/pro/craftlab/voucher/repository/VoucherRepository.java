@@ -6,4 +6,4 @@ import pro.craftlab.voucher.repository.model.Customer;
 import pro.craftlab.voucher.repository.model.Voucher;
 
 @Repository
-public interface VoucherRepository extends JpaRepository<Voucher, Long> {}
+public interface VoucherRepository extends JpaRepository<Voucher, String> {}
