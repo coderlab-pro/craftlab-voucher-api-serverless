@@ -1,15 +1,11 @@
 package pro.craftlab.voucher.repository.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import java.time.Instant;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import java.sql.Date;
-import java.time.Instant;
 
 @Entity
 @AllArgsConstructor
@@ -17,12 +13,18 @@ import java.time.Instant;
 @Builder
 public class Voucher {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id private String id;
-    private String code;
-    private Instant validation;
-    private Instant expiration;
+  @Id private String id;
+  private String code;
+  private Instant validation;
+  private Instant expiration;
+  private Instant creationDatetime;
 
-    @ManyToOne
-    private Customer customer;
+  @PrePersist
+  public void prePersist() {
+    if (this.id == null) {
+      this.id = UUID.randomUUID().toString();
+    }
+  }
+
+  @ManyToOne private Customer customer;
 }
