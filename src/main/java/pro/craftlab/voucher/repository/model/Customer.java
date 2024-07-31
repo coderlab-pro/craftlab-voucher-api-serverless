@@ -8,21 +8,21 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.util.HashSet;
 import java.util.Set;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Data
+@ToString
 public class Customer {
   @Id private String id;
   private String name;
   private String mail;
 
   @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = EAGER)
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private Set<Voucher> vouchers = new HashSet<>();
 }

@@ -3,14 +3,14 @@ package pro.craftlab.voucher.repository.model;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
+@Data
 public class Voucher {
 
   @Id private String id;
@@ -26,5 +26,5 @@ public class Voucher {
     }
   }
 
-  @ManyToOne private Customer customer;
+  @ToString.Exclude @ManyToOne private Customer customer;
 }
