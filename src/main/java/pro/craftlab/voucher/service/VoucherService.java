@@ -1,4 +1,4 @@
-package pro.craftlab.voucher.service.event;
+package pro.craftlab.voucher.service;
 
 import java.security.SecureRandom;
 import java.time.Duration;

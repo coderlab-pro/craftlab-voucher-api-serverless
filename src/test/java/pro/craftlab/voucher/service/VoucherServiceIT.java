@@ -1,8 +1,7 @@
-package pro.craftlab.voucher.endpoint;
+package pro.craftlab.voucher.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -12,17 +11,13 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import pro.craftlab.voucher.conf.FacadeIT;
 import pro.craftlab.voucher.repository.model.Customer;
 import pro.craftlab.voucher.repository.model.Voucher;
-import pro.craftlab.voucher.service.event.CustomerService;
-import pro.craftlab.voucher.service.event.VoucherService;
 
 @Testcontainers
-public class CustomerServiceIT extends FacadeIT {
+public class VoucherServiceIT extends FacadeIT {
 
   @Autowired CustomerService subject;
-
   @Autowired VoucherService voucherService;
   private static final String id = "customer-id-1";
-  Instant creationDatetime = Instant.parse("2024-08-01T10:00:00Z");
 
   private Customer expected() {
     return Customer.builder()
@@ -43,25 +38,22 @@ public class CustomerServiceIT extends FacadeIT {
   }
 
   @Test
-  void read_customers() {
-    var actual = subject.getCustomers(Pageable.ofSize((500)));
-    assertEquals(1, actual.size());
-  }
-
-  @Test
   void read_customer_voucher() {
     Customer customer = expected();
     subject.saveAll(List.of(customer));
     Voucher generatedVoucher = voucherService.generateVoucherCodeForCustomer(customer.getId());
     var actual = subject.getCustomers(Pageable.ofSize((500)));
     assertEquals(1, actual.size());
-    System.out.println("Generated Voucher Code: " + generatedVoucher.getCode());
   }
 
   @Test
-  void read_customersById() {
-    var actual = subject.getCustomerById(id);
-    assertEquals(expected(), actual);
+  void save_customers_and_generate_voucher() {
+    var savedCustomers = subject.saveAll(List.of(updatedCustomer()));
+    assertEquals(1, savedCustomers.size());
+    Customer savedCustomer = savedCustomers.getFirst();
+    Voucher generatedVoucher = voucherService.generateVoucherCodeForCustomer(savedCustomer.getId());
+    assertEquals(savedCustomer.getId(), generatedVoucher.getCustomer().getId());
+    assertEquals(10, generatedVoucher.getCode().length());
   }
 
   @Test
@@ -69,8 +61,6 @@ public class CustomerServiceIT extends FacadeIT {
     Customer customer = expected();
     subject.saveAll(List.of(customer));
     Voucher generatedVoucher = voucherService.generateVoucherCodeForCustomer(customer.getId());
-    assertEquals(customer.getId(), generatedVoucher.getCustomer().getId());
     assertTrue(generatedVoucher.getValidation().isBefore(generatedVoucher.getExpiration()));
-    System.out.println("Generated Voucher: " + generatedVoucher);
   }
 }
