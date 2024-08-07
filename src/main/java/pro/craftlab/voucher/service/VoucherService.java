@@ -4,7 +4,6 @@ import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pro.craftlab.voucher.repository.CustomerRepository;
 import pro.craftlab.voucher.repository.VoucherRepository;
@@ -19,8 +18,8 @@ public class VoucherService {
   private static final int voucher_length = 10;
   private static SecureRandom random = new SecureRandom();
 
-  @Autowired private VoucherRepository voucherRepository;
-  @Autowired private CustomerRepository customerRepository;
+  private VoucherRepository voucherRepository;
+  private CustomerRepository customerRepository;
 
   private String generateVoucherCode() {
     StringBuilder voucherCode = new StringBuilder(voucher_length);
@@ -50,6 +49,13 @@ public class VoucherService {
             .customer(customer)
             .build();
     voucherRepository.save(voucher);
-    return voucher;
+    return voucherRepository.save(
+        Voucher.builder()
+            .code(code)
+            .validation(validation)
+            .expiration(expiration)
+            .creationDatetime(creationDatetime)
+            .customer(customer)
+            .build());
   }
 }

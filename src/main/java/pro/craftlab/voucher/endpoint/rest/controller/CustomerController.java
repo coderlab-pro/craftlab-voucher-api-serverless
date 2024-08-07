@@ -39,7 +39,6 @@ public class CustomerController {
   public List<pro.craftlab.voucher.endpoint.rest.model.Voucher> getCustomerVouchers(
       @PathVariable String id) {
     var customer = customerService.getCustomerById(id);
-
     return customer.getVouchers().stream().map(voucherRestMapper::toRest).toList();
   }
 }

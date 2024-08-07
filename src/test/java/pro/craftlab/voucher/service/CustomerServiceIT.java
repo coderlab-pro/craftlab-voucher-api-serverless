@@ -39,18 +39,18 @@ class CustomerServiceIT extends FacadeIT {
   @Test
   void read_customers() {
     var actual = subject.getCustomers(Pageable.ofSize((500)));
-    assertTrue(actual.contains(expected()));
 
+    assertTrue(actual.contains(expected()));
     assertEquals(1, actual.size());
   }
 
   @Test
   void read_customersById() {
+    Customer expectedCustomer = updatedCustomer();
     var savedCustomers = subject.saveAll(List.of(updatedCustomer()));
     assertEquals(1, savedCustomers.size());
 
-    Customer actual = subject.getCustomerById(id);
-    Customer expectedCustomer = updatedCustomer();
+    Customer actual = subject.getCustomerById(expectedCustomer.getId());
 
     assertEquals(expectedCustomer, actual);
   }

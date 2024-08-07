@@ -62,8 +62,9 @@ class VoucherServiceIT extends FacadeIT {
     Customer customer = expected();
     subject.saveAll(List.of(customer));
     voucherService.generateVoucherCodeForCustomer(customer.getId());
-    Customer actual = subject.getCustomerById(expected().getId());
+    Voucher actual = voucherService.generateVoucherCodeForCustomer(customer.getId());
 
-    assertEquals(1, actual.getVouchers().size());
+    assertNotNull(actual);
+    assertEquals(4, subject.getCustomerById(customer.getId()).getVouchers().size());
   }
 }
