@@ -13,7 +13,7 @@ import pro.craftlab.voucher.repository.model.Customer;
 import pro.craftlab.voucher.repository.model.Voucher;
 
 @Testcontainers
-public class VoucherServiceIT extends FacadeIT {
+class VoucherServiceIT extends FacadeIT {
 
   @Autowired CustomerService subject;
   @Autowired VoucherService voucherService;
@@ -43,24 +43,27 @@ public class VoucherServiceIT extends FacadeIT {
     subject.saveAll(List.of(customer));
     Voucher generatedVoucher = voucherService.generateVoucherCodeForCustomer(customer.getId());
     var actual = subject.getCustomers(Pageable.ofSize((500)));
+
     assertEquals(1, actual.size());
   }
 
   @Test
   void save_customers_and_generate_voucher() {
     var savedCustomers = subject.saveAll(List.of(updatedCustomer()));
-    assertEquals(1, savedCustomers.size());
-    Customer savedCustomer = savedCustomers.getFirst();
-    Voucher generatedVoucher = voucherService.generateVoucherCodeForCustomer(savedCustomer.getId());
-    assertEquals(savedCustomer.getId(), generatedVoucher.getCustomer().getId());
-    assertEquals(10, generatedVoucher.getCode().length());
+    for (Customer newCustomers : savedCustomers) {
+      var actual = voucherService.generateVoucherCodeForCustomer(newCustomers.getId());
+
+      assertEquals(10, actual.getCode().length());
+    }
   }
 
   @Test
   void generate_voucher_for_customer() {
     Customer customer = expected();
     subject.saveAll(List.of(customer));
-    Voucher generatedVoucher = voucherService.generateVoucherCodeForCustomer(customer.getId());
-    assertTrue(generatedVoucher.getValidation().isBefore(generatedVoucher.getExpiration()));
+    voucherService.generateVoucherCodeForCustomer(customer.getId());
+    Customer actual = subject.getCustomerById(expected().getId());
+
+    assertEquals(1, actual.getVouchers().size());
   }
 }

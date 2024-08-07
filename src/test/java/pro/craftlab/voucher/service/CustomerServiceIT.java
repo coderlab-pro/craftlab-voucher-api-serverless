@@ -12,7 +12,7 @@ import pro.craftlab.voucher.conf.FacadeIT;
 import pro.craftlab.voucher.repository.model.Customer;
 
 @Testcontainers
-public class CustomerServiceIT extends FacadeIT {
+class CustomerServiceIT extends FacadeIT {
 
   @Autowired CustomerService subject;
   @Autowired VoucherService voucherService;
@@ -39,16 +39,19 @@ public class CustomerServiceIT extends FacadeIT {
   @Test
   void read_customers() {
     var actual = subject.getCustomers(Pageable.ofSize((500)));
-    assertEquals(1, actual.size());
     assertTrue(actual.contains(expected()));
+
+    assertEquals(1, actual.size());
   }
 
   @Test
   void read_customersById() {
     var savedCustomers = subject.saveAll(List.of(updatedCustomer()));
     assertEquals(1, savedCustomers.size());
+
     Customer actual = subject.getCustomerById(id);
     Customer expectedCustomer = updatedCustomer();
+
     assertEquals(expectedCustomer, actual);
   }
 }
