@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -29,7 +31,9 @@ class CustomerControllerTest {
     when(customerServiceMock.getCustomerById(customerId))
         .thenReturn(Customer.builder().vouchers(Set.of()).build());
     List<Voucher> exepted = List.of();
+
     List<Voucher> actual = subject.getCustomerVouchers(customerId);
+
     assertEquals(exepted, actual);
   }
 
@@ -48,7 +52,9 @@ class CustomerControllerTest {
         .thenReturn(pro.craftlab.voucher.repository.model.Voucher.builder().build());
     List<pro.craftlab.voucher.repository.model.Voucher> exepted =
         List.of(pro.craftlab.voucher.repository.model.Voucher.builder().build());
+
     var actual = subject.generateVouchersForCustomer(customerId);
+
     assertEquals(exepted, actual);
   }
 
@@ -58,7 +64,9 @@ class CustomerControllerTest {
         List.of(new pro.craftlab.voucher.endpoint.rest.model.Customer().id("customerId"));
     when(customerServiceMock.saveAll(any()))
         .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+
     var actual = subject.saveCustomers(customerDetails);
+
     assertEquals(customerDetails, actual);
   }
 }
