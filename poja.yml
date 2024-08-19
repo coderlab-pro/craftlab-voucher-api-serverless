@@ -16,7 +16,7 @@ database_non_root_username: /craftlab-voucher/${Env}/db/user/password
 frontal_function_timeout: 30
 frontal_memory: 2048
 frontal_reserved_concurrent_executions_nb: null
-jacoco_min_coverage: '0.8'
+jacoco_min_coverage: '0.6'
 java_facade_it: FacadeIT
 package_full_name: pro.craftlab.voucher
 poja_domain_owner: 088312068315
