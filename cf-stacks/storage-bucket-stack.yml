@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: CD storage database
+Description: CD storage bucket stack
 
 Parameters:
   Env:
