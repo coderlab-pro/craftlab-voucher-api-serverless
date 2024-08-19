@@ -14,7 +14,7 @@ custom_java_repositories: poja-custom-java-repositories.txt
 database_non_root_password: /craftlab-voucher/${Env}/db/user/password
 database_non_root_username: /craftlab-voucher/${Env}/db/user/password
 frontal_function_timeout: 30
-frontal_memory: 2048
+frontal_memory: 512
 frontal_reserved_concurrent_executions_nb: null
 jacoco_min_coverage: '0.6'
 java_facade_it: FacadeIT
@@ -43,5 +43,5 @@ with_swagger_ui: 'false'
 worker_batch: 1
 worker_function_1_timeout: 600
 worker_function_2_timeout: 600
-worker_memory: 1024
+worker_memory: 512
 worker_reserved_concurrent_executions_nb: 60
