@@ -2,11 +2,14 @@ package pro.craftlab.voucher.endpoint.rest.controller;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import pro.craftlab.voucher.endpoint.rest.controller.mapper.CustomerRestMapper;
 import pro.craftlab.voucher.endpoint.rest.controller.mapper.VoucherRestMapper;
 import pro.craftlab.voucher.endpoint.rest.model.CreateVoucher;
 import pro.craftlab.voucher.endpoint.rest.model.Customer;
+import pro.craftlab.voucher.repository.model.BoundedPageSize;
+import pro.craftlab.voucher.repository.model.PageFromOne;
 import pro.craftlab.voucher.repository.model.Voucher;
 import pro.craftlab.voucher.service.CustomerService;
 import pro.craftlab.voucher.service.VoucherService;
@@ -18,6 +21,19 @@ public class CustomerController {
   private CustomerRestMapper customerRestMapper;
   private VoucherService voucherGeneratorService;
   private VoucherRestMapper voucherRestMapper;
+
+  // TODO: add controller test
+  @GetMapping
+  public List<Customer> getCustomers(
+      @RequestParam(required = false) Integer page,
+      @RequestParam(required = false) Integer pageSize) {
+    PageFromOne pageFromOne = new PageFromOne(page);
+    BoundedPageSize boundedPageSize = new BoundedPageSize(pageSize);
+    PageRequest pageRequest = PageRequest.of(pageFromOne.value(), boundedPageSize.value());
+    return customerService.getCustomers(pageRequest).stream()
+        .map(customerRestMapper::toRest)
+        .toList();
+  }
 
   @GetMapping("/customers/{id}")
   public Customer getCustomerById(@PathVariable String id) {
