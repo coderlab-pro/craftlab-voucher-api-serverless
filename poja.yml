@@ -26,8 +26,8 @@ prod_db_cluster_timeout: '300'
 region: eu-west-3
 ses_source: coderlab.tech@proton.me
 ssm_sg_id: /craftlab-voucher/sg/id
-ssm_subnet1_id: /craftlab-voucher/subnet/private1/id
-ssm_subnet2_id: /craftlab-voucher/subnet/private2/id
+ssm_subnet1_id: /craftlab-voucher/private/subnet1/id
+ssm_subnet2_id: /craftlab-voucher/private/subnet2/id
 ts_client_api_url_env_var_name: ''
 ts_client_default_openapi_server_url: ''
 with_codeql: 'false'
