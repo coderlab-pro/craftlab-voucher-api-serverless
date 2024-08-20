@@ -32,7 +32,7 @@ class CustomerServiceIT extends FacadeIT {
     return Customer.builder()
         .id("customer-id-1")
         .name("Paul")
-        .mail("paul@gmail.com")
+        .mail("paulcom")
         .vouchers(Set.of())
         .build();
   }
