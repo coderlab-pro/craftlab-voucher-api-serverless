@@ -1,14 +1,16 @@
-package pro.craftlab.voucher.endpoint.event.model;
+package pro.craftlab.voucher.endpoint.event.model.customer;
 
 import java.time.Duration;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import pro.craftlab.voucher.endpoint.event.model.PojaEvent;
 import pro.craftlab.voucher.repository.model.Customer;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
+@Data
+@EqualsAndHashCode(callSuper = false)
+@ToString
 public class CustomerCreated extends PojaEvent {
   private Customer customer;
 

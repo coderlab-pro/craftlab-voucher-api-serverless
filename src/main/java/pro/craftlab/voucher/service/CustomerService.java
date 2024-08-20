@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pro.craftlab.voucher.endpoint.event.EventProducer;
+import pro.craftlab.voucher.endpoint.event.model.customer.CustomerCreated;
 import pro.craftlab.voucher.repository.CustomerRepository;
 import pro.craftlab.voucher.repository.model.Customer;
 
@@ -19,7 +20,13 @@ public class CustomerService {
   }
 
   public List<Customer> saveAll(List<Customer> customers) {
-    // TODO: check if customer is already saved or to be updated then use eventProducer
+    customers.forEach(
+        customer -> {
+          var optionalCustomer = customerRepository.findById(customer.getId());
+          if (optionalCustomer.isEmpty()) {
+            eventProducer.accept(List.of(CustomerCreated.builder().customer(customer).build()));
+          }
+        });
     return customerRepository.saveAll(customers);
   }
 

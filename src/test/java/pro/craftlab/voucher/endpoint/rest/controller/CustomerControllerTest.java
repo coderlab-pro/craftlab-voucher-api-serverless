@@ -9,18 +9,27 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import pro.craftlab.voucher.endpoint.rest.controller.mapper.CustomerRestMapper;
 import pro.craftlab.voucher.endpoint.rest.controller.mapper.VoucherRestMapper;
+import pro.craftlab.voucher.endpoint.rest.controller.validator.CustomerRestValidator;
 import pro.craftlab.voucher.endpoint.rest.model.CreateVoucher;
 import pro.craftlab.voucher.endpoint.rest.model.Voucher;
+import pro.craftlab.voucher.repository.function.EmailValidationSupplier;
 import pro.craftlab.voucher.repository.model.Customer;
+import pro.craftlab.voucher.repository.model.exception.*;
 import pro.craftlab.voucher.service.CustomerService;
 import pro.craftlab.voucher.service.VoucherService;
+import pro.craftlab.voucher.service.event.CustomerCreatedService;
 
 class CustomerControllerTest {
+  @Mock private CustomerCreatedService customerCreatedService;
   CustomerService customerServiceMock = mock();
   VoucherService voucherServiceMock = mock();
-  CustomerRestMapper customerRestMapper = new CustomerRestMapper();
+  EmailValidationSupplier emailValidationSupplier = mock();
+  CustomerRestValidator customerRestValidator = new CustomerRestValidator(emailValidationSupplier);
+  CustomerRestMapper customerRestMapper = new CustomerRestMapper(customerRestValidator);
+
   VoucherRestMapper voucherRestMapper = new VoucherRestMapper();
   CustomerController subject =
       new CustomerController(
@@ -41,9 +50,17 @@ class CustomerControllerTest {
   @Test
   void get_customers_vouchers_ko() {
     String customerId = "customerId";
-    when(customerServiceMock.getCustomerById(customerId)).thenThrow(RuntimeException.class);
+    when(customerServiceMock.getCustomerById(customerId)).thenThrow(BadRequestException.class);
 
     assertThrows(RuntimeException.class, () -> subject.getCustomerVouchers(customerId));
+  }
+
+  @Test
+  void get_customers_ko() {
+    String customerId = "customerId";
+    when(customerServiceMock.getCustomerById(customerId)).thenThrow(BadRequestException.class);
+
+    assertThrows(RuntimeException.class, () -> subject.getCustomerById(customerId));
   }
 
   @Test
@@ -62,10 +79,29 @@ class CustomerControllerTest {
     assertEquals(exepted, actual);
   }
 
-  @Test
+  /*@Test
   void update_customers_ok() {
     var customerDetails =
-        List.of(new pro.craftlab.voucher.endpoint.rest.model.Customer().id("customerId"));
+        List.of(new pro.craftlab.voucher.endpoint.rest.model.Customer().id("customerId").name("Paul").mail("paul@gmail.com"));
+    when(customerServiceMock.saveAll(any()))
+        .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
+
+    var actual = subject.saveCustomers(customerDetails);
+
+    assertEquals(customerDetails, actual);
+  }*/
+
+  @Test
+  void update_customers_ok() {
+
+    var customerDetails =
+        List.of(
+            new pro.craftlab.voucher.endpoint.rest.model.Customer()
+                .id("customerId")
+                .name("Paul")
+                .mail("paul@gmail.com"));
+
+    when(emailValidationSupplier.isValidEmail("paul@gmail.com")).thenReturn(true);
     when(customerServiceMock.saveAll(any()))
         .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
