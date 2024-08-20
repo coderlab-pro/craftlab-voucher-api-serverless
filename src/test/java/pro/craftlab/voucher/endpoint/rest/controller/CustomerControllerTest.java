@@ -8,8 +8,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import org.springframework.data.domain.PageRequest;
 import pro.craftlab.voucher.endpoint.rest.controller.mapper.CustomerRestMapper;
 import pro.craftlab.voucher.endpoint.rest.controller.mapper.VoucherRestMapper;
 import pro.craftlab.voucher.endpoint.rest.controller.validator.CustomerRestValidator;
@@ -20,16 +21,13 @@ import pro.craftlab.voucher.repository.model.Customer;
 import pro.craftlab.voucher.repository.model.exception.*;
 import pro.craftlab.voucher.service.CustomerService;
 import pro.craftlab.voucher.service.VoucherService;
-import pro.craftlab.voucher.service.event.CustomerCreatedService;
 
 class CustomerControllerTest {
-  @Mock private CustomerCreatedService customerCreatedService;
   CustomerService customerServiceMock = mock();
-  VoucherService voucherServiceMock = mock();
   EmailValidationSupplier emailValidationSupplier = mock();
+  VoucherService voucherServiceMock = mock();
   CustomerRestValidator customerRestValidator = new CustomerRestValidator(emailValidationSupplier);
   CustomerRestMapper customerRestMapper = new CustomerRestMapper(customerRestValidator);
-
   VoucherRestMapper voucherRestMapper = new VoucherRestMapper();
   CustomerController subject =
       new CustomerController(
@@ -50,17 +48,53 @@ class CustomerControllerTest {
   @Test
   void get_customers_vouchers_ko() {
     String customerId = "customerId";
-    when(customerServiceMock.getCustomerById(customerId)).thenThrow(BadRequestException.class);
+    String expectedMessage = "Customer with ID " + customerId + " not found";
+    when(customerServiceMock.getCustomerById(customerId))
+        .thenThrow(new NotFoundException(expectedMessage));
 
-    assertThrows(RuntimeException.class, () -> subject.getCustomerVouchers(customerId));
+    NotFoundException thrownException =
+        assertThrows(NotFoundException.class, () -> subject.getCustomerVouchers(customerId));
+
+    assertEquals(expectedMessage, thrownException.getMessage());
+  }
+
+  @Test
+  void get_all_customers() {
+    Customer customer1 = new Customer();
+    customer1.setId("customer1");
+    customer1.setName("John");
+    customer1.setMail("john@example.com");
+
+    List<Customer> expected = List.of(customer1);
+
+    when(customerServiceMock.getCustomers(any(PageRequest.class))).thenReturn(expected);
+    List<pro.craftlab.voucher.endpoint.rest.model.Customer> actual = subject.getCustomers(1, 1);
+    assertEquals(expected.size(), actual.size());
+
+    Assertions.assertTrue(
+        expected.stream()
+            .allMatch(
+                e ->
+                    actual.stream()
+                        .anyMatch(
+                            a ->
+                                e.getId().equals(a.getId())
+                                    && e.getName().equals(a.getName())
+                                    && e.getMail().equals(a.getMail()))),
+        "Some customers do not match");
   }
 
   @Test
   void get_customers_ko() {
     String customerId = "customerId";
-    when(customerServiceMock.getCustomerById(customerId)).thenThrow(BadRequestException.class);
+    String expectedMessage = "Customer with ID " + customerId + " not found";
+    when(customerServiceMock.getCustomerById(customerId))
+        .thenThrow(new NotFoundException(expectedMessage));
 
-    assertThrows(RuntimeException.class, () -> subject.getCustomerById(customerId));
+    NotFoundException thrownException =
+        assertThrows(NotFoundException.class, () -> subject.getCustomerById(customerId));
+
+    assertEquals(expectedMessage, thrownException.getMessage());
   }
 
   @Test
@@ -79,21 +113,8 @@ class CustomerControllerTest {
     assertEquals(exepted, actual);
   }
 
-  /*@Test
-  void update_customers_ok() {
-    var customerDetails =
-        List.of(new pro.craftlab.voucher.endpoint.rest.model.Customer().id("customerId").name("Paul").mail("paul@gmail.com"));
-    when(customerServiceMock.saveAll(any()))
-        .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
-
-    var actual = subject.saveCustomers(customerDetails);
-
-    assertEquals(customerDetails, actual);
-  }*/
-
   @Test
   void update_customers_ok() {
-
     var customerDetails =
         List.of(
             new pro.craftlab.voucher.endpoint.rest.model.Customer()
@@ -101,12 +122,17 @@ class CustomerControllerTest {
                 .name("Paul")
                 .mail("paul@gmail.com"));
 
-    when(emailValidationSupplier.isValidEmail("paul@gmail.com")).thenReturn(true);
+    when(emailValidationSupplier.isValidEmail(anyString()))
+        .thenAnswer(
+            invocation -> {
+              String email = invocation.getArgument(0);
+              return email != null && email.matches("^[\\w+_.-]+@gmail\\.com$");
+            });
+
     when(customerServiceMock.saveAll(any()))
         .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
     var actual = subject.saveCustomers(customerDetails);
-
     assertEquals(customerDetails, actual);
   }
 }

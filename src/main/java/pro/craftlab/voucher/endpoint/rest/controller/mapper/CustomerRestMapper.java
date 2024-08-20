@@ -16,7 +16,6 @@ public class CustomerRestMapper {
   }
 
   public pro.craftlab.voucher.repository.model.Customer toDomain(Customer rest) {
-    // TODO : add CustomerRestValidator
     customerRestValidator.accept(rest);
     return pro.craftlab.voucher.repository.model.Customer.builder()
         .id(rest.getId())

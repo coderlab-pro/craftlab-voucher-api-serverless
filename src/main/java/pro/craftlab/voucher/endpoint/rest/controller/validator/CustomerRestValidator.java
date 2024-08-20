@@ -32,7 +32,7 @@ public class CustomerRestValidator implements Consumer<Customer> {
     }
     String message = sb.toString();
     if (!message.isEmpty()) {
-      throw new RuntimeException(message);
+      throw new BadRequestException(message);
     }
   }
 }

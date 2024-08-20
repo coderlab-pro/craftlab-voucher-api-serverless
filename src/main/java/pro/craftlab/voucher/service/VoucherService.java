@@ -10,6 +10,7 @@ import pro.craftlab.voucher.repository.VoucherRepository;
 import pro.craftlab.voucher.repository.function.VoucherCodeGenerator;
 import pro.craftlab.voucher.repository.model.Customer;
 import pro.craftlab.voucher.repository.model.Voucher;
+import pro.craftlab.voucher.repository.model.exception.NotFoundException;
 
 @Service
 @AllArgsConstructor
@@ -23,20 +24,20 @@ public class VoucherService {
     Customer customer =
         customerRepository
             .findById(idCustomer)
-            .orElseThrow(() -> new RuntimeException("Customer not found :" + idCustomer));
+            .orElseThrow(() -> new NotFoundException("Customer not found :" + idCustomer));
 
     Instant now = Instant.now();
     CreateVoucher createVoucher =
         createVouchers.stream()
             .findFirst()
-            .orElseThrow(() -> new RuntimeException("No vouchers find"));
+            .orElseThrow(() -> new NotFoundException("No vouchers find"));
 
     String code = voucherCodeGenerator.get();
     return voucherRepository.save(
         Voucher.builder()
             .code(code)
             .validationDatetime(createVoucher.getValidationDatetime())
-            .creationDatetime(createVoucher.getCreationDatetime())
+            .creationDatetime(now)
             .customer(customer)
             .build());
   }

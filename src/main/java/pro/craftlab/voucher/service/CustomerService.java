@@ -8,6 +8,7 @@ import pro.craftlab.voucher.endpoint.event.EventProducer;
 import pro.craftlab.voucher.endpoint.event.model.customer.CustomerCreated;
 import pro.craftlab.voucher.repository.CustomerRepository;
 import pro.craftlab.voucher.repository.model.Customer;
+import pro.craftlab.voucher.repository.model.exception.NotFoundException;
 
 @Service
 @AllArgsConstructor
@@ -33,6 +34,6 @@ public class CustomerService {
   public Customer getCustomerById(String id) {
     return customerRepository
         .findById(id)
-        .orElseThrow(() -> new RuntimeException("Customer not found"));
+        .orElseThrow(() -> new NotFoundException("Customer not found" + id));
   }
 }

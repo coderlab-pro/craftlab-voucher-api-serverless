@@ -27,7 +27,7 @@ public class CustomerCreatedService extends CustomerCreated implements Consumer<
     InternetAddress to = new InternetAddress(email);
     List<InternetAddress> cc = List.of(new InternetAddress("contact@craftlab.pro"));
     List<InternetAddress> bcc = List.of();
-    mailer.accept(new Email(to, cc, bcc, "Your new voucher code is now available", "", List.of()));
+    mailer.accept(new Email(to, cc, bcc, "Welcome to craftlab", "", List.of()));
     log.info("Customer creation processing finished, mail sent to " + email);
   }
 }
