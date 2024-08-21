@@ -34,31 +34,6 @@ class CustomerControllerTest {
           customerServiceMock, customerRestMapper, voucherServiceMock, voucherRestMapper);
 
   @Test
-  void get_customers_vouchers_ok() {
-    String customerId = "customerId";
-    when(customerServiceMock.getCustomerById(customerId))
-        .thenReturn(Customer.builder().vouchers(Set.of()).build());
-    List<Voucher> exepted = List.of();
-
-    List<Voucher> actual = subject.getCustomerVouchers(customerId);
-
-    assertEquals(exepted, actual);
-  }
-
-  @Test
-  void get_customers_vouchers_ko() {
-    String customerId = "customerId";
-    String expectedMessage = "Customer with ID " + customerId + " not found";
-    when(customerServiceMock.getCustomerById(customerId))
-        .thenThrow(new NotFoundException(expectedMessage));
-
-    NotFoundException thrownException =
-        assertThrows(NotFoundException.class, () -> subject.getCustomerVouchers(customerId));
-
-    assertEquals(expectedMessage, thrownException.getMessage());
-  }
-
-  @Test
   void get_all_customers() {
     Customer customer1 = new Customer();
     customer1.setId("customer1");
@@ -82,6 +57,30 @@ class CustomerControllerTest {
                                     && e.getName().equals(a.getName())
                                     && e.getMail().equals(a.getMail()))),
         "Some customers do not match");
+  }
+
+  @Test
+  void get_customers_vouchers_ok() {
+    String customerId = "customerId";
+    when(customerServiceMock.getCustomerById(customerId))
+        .thenReturn(Customer.builder().vouchers(Set.of()).build());
+    List<Voucher> exepted = List.of();
+
+    List<Voucher> actual = subject.getCustomerVouchers(customerId);
+
+    assertEquals(exepted, actual);
+  }
+
+  @Test
+  void get_customers_vouchers_ko() {
+    String customerId = "customerId";
+    when(customerServiceMock.getCustomerById(customerId))
+        .thenThrow(new NotFoundException("Customer not found"));
+
+    NotFoundException thrownException =
+        assertThrows(NotFoundException.class, () -> subject.getCustomerVouchers(customerId));
+
+    assertEquals("Customer not found", thrownException.getMessage());
   }
 
   @Test
@@ -114,6 +113,26 @@ class CustomerControllerTest {
   }
 
   @Test
+  void generate_voucher_customer_ko() {
+    CreateVoucher createVoucher = new CreateVoucher();
+    createVoucher.setValidationDatetime(Instant.now().plus(Duration.ofDays(30)));
+    createVoucher.setCreationDatetime(Instant.now());
+    String customerId = "customerId";
+
+    when(voucherServiceMock.generateVoucherCodeForCustomer(customerId, List.of(createVoucher)))
+        .thenThrow(new NotFoundException("Customer not found"));
+
+    NotFoundException thrown =
+        assertThrows(
+            NotFoundException.class,
+            () -> {
+              subject.generateVouchersForCustomer(customerId, List.of(createVoucher));
+            });
+
+    assertEquals("Customer not found", thrown.getMessage());
+  }
+
+  @Test
   void update_customers_ok() {
     var customerDetails =
         List.of(
@@ -134,5 +153,30 @@ class CustomerControllerTest {
 
     var actual = subject.saveCustomers(customerDetails);
     assertEquals(customerDetails, actual);
+  }
+
+  @Test
+  void get_customers_vouchers_forbidden_exception() {
+    String customerId = "forbiddenCustomerId";
+
+    when(customerServiceMock.getCustomerById(customerId))
+        .thenThrow(new ForbiddenException("Access Denied"));
+
+    assertThrows(ForbiddenException.class, () -> subject.getCustomerVouchers(customerId));
+  }
+
+  @Test
+  void get_all_customers_forbidden_exception() {
+    when(customerServiceMock.getCustomers(any(PageRequest.class)))
+        .thenThrow(new ForbiddenException("Access Denied"));
+
+    ForbiddenException thrown =
+        assertThrows(
+            ForbiddenException.class,
+            () -> {
+              subject.getCustomers(1, 1);
+            });
+
+    assertEquals("Access Denied", thrown.getMessage());
   }
 }

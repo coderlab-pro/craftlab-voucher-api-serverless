@@ -47,6 +47,7 @@ class CustomerServiceIT extends FacadeIT {
   @Test
   void read_customersById() {
     Customer expectedCustomer = updatedCustomer();
+
     var savedCustomers = subject.saveAll(List.of(updatedCustomer()));
     assertEquals(1, savedCustomers.size());
 
