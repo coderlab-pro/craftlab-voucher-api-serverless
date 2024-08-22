@@ -40,7 +40,6 @@ class CustomerServiceIT extends FacadeIT {
   @Test
   void read_customers() {
     var actual = subject.getCustomers(Pageable.ofSize((500)));
-
     assertTrue(actual.contains(expected()));
     assertEquals(1, actual.size());
   }
@@ -48,7 +47,6 @@ class CustomerServiceIT extends FacadeIT {
   @Test
   void read_customersById() {
     Customer expectedCustomer = updatedCustomer();
-
     var savedCustomers = subject.saveAll(List.of(updatedCustomer()));
     assertEquals(1, savedCustomers.size());
 
@@ -61,13 +59,13 @@ class CustomerServiceIT extends FacadeIT {
   void save_customer_with_missing_information() {
     Customer invalidCustomer =
         Customer.builder().id("customer-id-1").name("jean").mail(null).vouchers(Set.of()).build();
-
     ApiException exception =
         assertThrows(
             ApiException.class,
             () -> {
               subject.saveAll(List.of(invalidCustomer));
             });
+
     assertTrue(exception.getMessage().contains("Email cannot be null or empty"));
   }
 }

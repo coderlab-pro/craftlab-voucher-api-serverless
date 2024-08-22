@@ -14,7 +14,7 @@ import pro.craftlab.voucher.mail.Mailer;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class CustomerCreatedService extends CustomerCreated implements Consumer<CustomerCreated> {
+public class CustomerCreatedService implements Consumer<CustomerCreated> {
   private final Mailer mailer;
 
   // TODO: add thymeleaf parser

@@ -34,10 +34,8 @@ class CustomerControllerTestException {
   void get_customers_vouchers_ko() {
     String customerId = "customerId";
     String expectedMessage = "Customer not found";
-
     when(customerServiceMock.getCustomerById(customerId))
         .thenThrow(new NotFoundException(expectedMessage));
-
     NotFoundException thrownException =
         assertThrows(
             NotFoundException.class,
@@ -52,10 +50,8 @@ class CustomerControllerTestException {
   void get_customers_ko() {
     String customerId = "customerId";
     String expectedMessage = "Customer with ID " + customerId + " not found";
-
     when(customerServiceMock.getCustomerById(customerId))
         .thenThrow(new NotFoundException(expectedMessage));
-
     NotFoundException thrownException =
         assertThrows(
             NotFoundException.class,
@@ -72,10 +68,8 @@ class CustomerControllerTestException {
     createVoucher.setValidationDatetime(Instant.now().plus(Duration.ofDays(-30)));
     createVoucher.setCreationDatetime(Instant.now());
     String customerId = "customerId";
-
     when(voucherServiceMock.generateVoucherCodeForCustomer(customerId, List.of(createVoucher)))
         .thenThrow(new NotFoundException("Customer not found"));
-
     NotFoundException thrown =
         assertThrows(
             NotFoundException.class,
@@ -89,7 +83,6 @@ class CustomerControllerTestException {
   @Test
   void get_customers_vouchers_forbidden_exception() {
     String customerId = "forbiddenCustomerId";
-
     when(customerServiceMock.getCustomerById(customerId))
         .thenThrow(new ForbiddenException("Access Denied"));
 
@@ -100,7 +93,6 @@ class CustomerControllerTestException {
   void get_all_customers_forbidden_exception() {
     when(customerServiceMock.getCustomers(any(PageRequest.class)))
         .thenThrow(new ForbiddenException("Access Denied"));
-
     ForbiddenException thrown =
         assertThrows(
             ForbiddenException.class,
@@ -118,7 +110,6 @@ class CustomerControllerTestException {
             invocation -> {
               throw new TooManyRequestsException("Too many requests");
             });
-
     TooManyRequestsException thrownException =
         assertThrows(
             TooManyRequestsException.class,
@@ -127,6 +118,7 @@ class CustomerControllerTestException {
                 subject.getCustomers(1, 1);
               }
             });
+
     assertEquals("Too many requests", thrownException.getMessage());
   }
 
@@ -136,10 +128,8 @@ class CustomerControllerTestException {
     createVoucher.setValidationDatetime(Instant.now().plus(Duration.ofDays(30)));
     createVoucher.setCreationDatetime(Instant.now());
     String customerId = "customerId";
-
     when(voucherServiceMock.generateVoucherCodeForCustomer(customerId, List.of(createVoucher)))
         .thenThrow(new TooManyRequestsException("Too many requests"));
-
     TooManyRequestsException thrown =
         assertThrows(
             TooManyRequestsException.class,
@@ -155,13 +145,11 @@ class CustomerControllerTestException {
             .id("customerId")
             .name("Paul")
             .mail("invalid-email");
-
     doThrow(new BadRequestException("Invalid email address"))
         .when(emailRestValidator)
         .accept(customerDetails);
     when(customerServiceMock.saveAll(any()))
         .thenThrow(new BadRequestException("Invalid email address"));
-
     BadRequestException thrownException =
         assertThrows(
             BadRequestException.class, () -> subject.saveCustomers(List.of(customerDetails)));

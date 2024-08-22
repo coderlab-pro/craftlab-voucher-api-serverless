@@ -63,10 +63,8 @@ class VoucherServiceIT extends FacadeIT {
     CreateVoucher createVoucher = new CreateVoucher();
     createVoucher.setValidationDatetime(Instant.now().plus(Duration.ofDays(30)));
     createVoucher.setCreationDatetime(Instant.now());
-
     Customer customer = updatedCustomer();
     List<Customer> savedCustomers = subject.saveAll(List.of(customer));
-
     for (Customer newCustomer : savedCustomers) {
       Voucher actual =
           voucherService.generateVoucherCodeForCustomer(
@@ -82,20 +80,17 @@ class VoucherServiceIT extends FacadeIT {
     CreateVoucher createVoucher = new CreateVoucher();
     createVoucher.setValidationDatetime(Instant.now().plus(Duration.ofDays(30)));
     createVoucher.setCreationDatetime(Instant.now());
-
     Customer customer = expected();
     subject.saveAll(List.of(customer));
-
     Voucher firstVoucher =
         voucherService.generateVoucherCodeForCustomer(customer.getId(), List.of(createVoucher));
     assertNotNull(firstVoucher);
-
     Voucher secondVoucher =
         voucherService.generateVoucherCodeForCustomer(customer.getId(), List.of(createVoucher));
+
     assertNotNull(secondVoucher);
 
     Customer updatedCustomer = subject.getCustomerById(customer.getId());
-
     int voucherCount = updatedCustomer.getVouchers().size();
     assertEquals(2, voucherCount, "Customer should have 2 vouchers generated.");
   }
@@ -105,7 +100,6 @@ class VoucherServiceIT extends FacadeIT {
     CreateVoucher createVoucher = new CreateVoucher();
     createVoucher.setValidationDatetime(Instant.now().plus(Duration.ofDays(30)));
     createVoucher.setCreationDatetime(Instant.now());
-
     Customer validCustomer = updatedCustomer();
     Customer invalidCustomer =
         Customer.builder()
@@ -114,21 +108,19 @@ class VoucherServiceIT extends FacadeIT {
             .mail("invalid-email")
             .vouchers(Set.of())
             .build();
-
     List<Customer> savedCustomers = subject.saveAll(List.of(validCustomer));
-
-    Voucher actualVoucher =
+    Voucher actual =
         voucherService.generateVoucherCodeForCustomer(
             validCustomer.getId(), List.of(createVoucher));
-    assertNotNull(actualVoucher);
-    assertEquals(10, actualVoucher.getCode().length());
-
+    assertNotNull(actual);
+    assertEquals(10, actual.getCode().length());
     ApiException exception =
         assertThrows(
             ApiException.class,
             () -> {
               subject.saveAll(List.of(invalidCustomer));
             });
+
     assertTrue(exception.getMessage().contains("Email is not valid"), "IEmail is not valid");
   }
 
@@ -137,13 +129,13 @@ class VoucherServiceIT extends FacadeIT {
     CreateVoucher createVoucher = new CreateVoucher();
     createVoucher.setValidationDatetime(Instant.now().plus(Duration.ofDays(30)));
     createVoucher.setCreationDatetime(Instant.now());
-
     NotFoundException exception =
         assertThrows(
             NotFoundException.class,
             () -> {
               voucherService.generateVoucherCodeForCustomer("noneCustomer", List.of(createVoucher));
             });
+
     assertTrue(exception.getMessage().contains("Customer not found"));
   }
 
@@ -152,10 +144,8 @@ class VoucherServiceIT extends FacadeIT {
     CreateVoucher invalidVoucher = new CreateVoucher();
     invalidVoucher.setValidationDatetime(Instant.now().plus(Duration.ofDays(-30)));
     invalidVoucher.setCreationDatetime(Instant.now());
-
     Customer validCustomer = updatedCustomer();
     subject.saveAll(List.of(validCustomer));
-
     ApiException exception =
         assertThrows(
             ApiException.class,
@@ -163,6 +153,7 @@ class VoucherServiceIT extends FacadeIT {
               voucherService.generateVoucherCodeForCustomer(
                   validCustomer.getId(), List.of(invalidVoucher));
             });
+
     assertTrue(exception.getMessage().contains("Date Validation invalid"));
   }
 
@@ -171,7 +162,6 @@ class VoucherServiceIT extends FacadeIT {
     CreateVoucher invalidVoucher = new CreateVoucher();
     invalidVoucher.setValidationDatetime(null);
     invalidVoucher.setCreationDatetime(Instant.now());
-
     Customer validCustomer = updatedCustomer();
     subject.saveAll(List.of(validCustomer));
     ApiException exception =
