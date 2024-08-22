@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import pro.craftlab.voucher.endpoint.event.EventProducer;
 import pro.craftlab.voucher.endpoint.event.model.customer.CustomerCreated;
 import pro.craftlab.voucher.repository.CustomerRepository;
-import pro.craftlab.voucher.repository.function.EmailValidationSupplier;
+import pro.craftlab.voucher.repository.function.EmailValidator;
 import pro.craftlab.voucher.repository.model.Customer;
 import pro.craftlab.voucher.repository.model.exception.BadRequestException;
 import pro.craftlab.voucher.repository.model.exception.NotFoundException;
@@ -17,7 +17,7 @@ import pro.craftlab.voucher.repository.model.exception.NotFoundException;
 public class CustomerService {
   private final CustomerRepository customerRepository;
   private final EventProducer eventProducer;
-  private EmailValidationSupplier emailValidationSupplier;
+  private EmailValidator emailValidator;
 
   public List<Customer> getCustomers(Pageable pageable) {
     return customerRepository.findAll(pageable).stream().toList();
@@ -28,9 +28,7 @@ public class CustomerService {
       if (customer == null) {
         throw new BadRequestException("Customer is mandatory");
       }
-      if (!emailValidationSupplier.isValidEmail(customer.getMail())) {
-        throw new BadRequestException("Invalid email address " + customer.getMail());
-      }
+      emailValidator.accept(customer);
     }
     customers.forEach(
         customer -> {

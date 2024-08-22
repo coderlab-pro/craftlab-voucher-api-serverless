@@ -14,7 +14,7 @@ import pro.craftlab.voucher.conf.FacadeIT;
 import pro.craftlab.voucher.endpoint.rest.model.CreateVoucher;
 import pro.craftlab.voucher.repository.model.Customer;
 import pro.craftlab.voucher.repository.model.Voucher;
-import pro.craftlab.voucher.repository.model.exception.BadRequestException;
+import pro.craftlab.voucher.repository.model.exception.ApiException;
 import pro.craftlab.voucher.repository.model.exception.NotFoundException;
 
 @Testcontainers
@@ -123,13 +123,13 @@ class VoucherServiceIT extends FacadeIT {
     assertNotNull(actualVoucher);
     assertEquals(10, actualVoucher.getCode().length());
 
-    BadRequestException exception =
+    ApiException exception =
         assertThrows(
-            BadRequestException.class,
+            ApiException.class,
             () -> {
               subject.saveAll(List.of(invalidCustomer));
             });
-    assertTrue(exception.getMessage().contains("Invalid email address"), "Invalid email address");
+    assertTrue(exception.getMessage().contains("Email is not valid"), "IEmail is not valid");
   }
 
   @Test
@@ -156,9 +156,9 @@ class VoucherServiceIT extends FacadeIT {
     Customer validCustomer = updatedCustomer();
     subject.saveAll(List.of(validCustomer));
 
-    BadRequestException exception =
+    ApiException exception =
         assertThrows(
-            BadRequestException.class,
+            ApiException.class,
             () -> {
               voucherService.generateVoucherCodeForCustomer(
                   validCustomer.getId(), List.of(invalidVoucher));
@@ -174,14 +174,14 @@ class VoucherServiceIT extends FacadeIT {
 
     Customer validCustomer = updatedCustomer();
     subject.saveAll(List.of(validCustomer));
-    BadRequestException exception =
+    ApiException exception =
         assertThrows(
-            BadRequestException.class,
+            ApiException.class,
             () -> {
               voucherService.generateVoucherCodeForCustomer(
                   validCustomer.getId(), List.of(invalidVoucher));
             });
 
-    assertTrue(exception.getMessage().contains("Date Validation invalid"));
+    assertTrue(exception.getMessage().contains("Date validation cannot be null or empty"));
   }
 }

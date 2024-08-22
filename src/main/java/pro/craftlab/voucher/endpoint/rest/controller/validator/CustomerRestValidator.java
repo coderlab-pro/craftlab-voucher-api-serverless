@@ -4,17 +4,16 @@ import java.util.function.Consumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pro.craftlab.voucher.endpoint.rest.model.Customer;
-import pro.craftlab.voucher.repository.function.EmailValidationSupplier;
 import pro.craftlab.voucher.repository.model.exception.BadRequestException;
 
 @Component
 public class CustomerRestValidator implements Consumer<Customer> {
 
-  private final EmailValidationSupplier emailValidationSupplier;
+  private final EmailRestValidator emailRestValidator;
 
   @Autowired
-  public CustomerRestValidator(EmailValidationSupplier emailValidationSupplier) {
-    this.emailValidationSupplier = emailValidationSupplier;
+  public CustomerRestValidator(EmailRestValidator validationMail) {
+    this.emailRestValidator = validationMail;
   }
 
   @Override
@@ -23,9 +22,7 @@ public class CustomerRestValidator implements Consumer<Customer> {
     if (customer == null) {
       throw new BadRequestException("Customer is mandatory");
     } else {
-      if (!emailValidationSupplier.isValidEmail(customer.getMail())) {
-        sb.append("Invalid email address " + customer.getMail() + ". ");
-      }
+      emailRestValidator.accept(customer);
       if (customer.getName() == null) {
         sb.append("Name is mandatory. ");
       }

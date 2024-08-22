@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import pro.craftlab.voucher.conf.FacadeIT;
 import pro.craftlab.voucher.repository.model.Customer;
-import pro.craftlab.voucher.repository.model.exception.BadRequestException;
+import pro.craftlab.voucher.repository.model.exception.ApiException;
 
 @Testcontainers
 class CustomerServiceIT extends FacadeIT {
@@ -62,12 +62,12 @@ class CustomerServiceIT extends FacadeIT {
     Customer invalidCustomer =
         Customer.builder().id("customer-id-1").name("jean").mail(null).vouchers(Set.of()).build();
 
-    BadRequestException exception =
+    ApiException exception =
         assertThrows(
-            BadRequestException.class,
+            ApiException.class,
             () -> {
               subject.saveAll(List.of(invalidCustomer));
             });
-    assertTrue(exception.getMessage().contains("Invalid email address"));
+    assertTrue(exception.getMessage().contains("Email cannot be null or empty"));
   }
 }

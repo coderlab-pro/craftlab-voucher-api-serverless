@@ -14,9 +14,9 @@ import org.springframework.data.domain.PageRequest;
 import pro.craftlab.voucher.endpoint.rest.controller.mapper.CustomerRestMapper;
 import pro.craftlab.voucher.endpoint.rest.controller.mapper.VoucherRestMapper;
 import pro.craftlab.voucher.endpoint.rest.controller.validator.CustomerRestValidator;
+import pro.craftlab.voucher.endpoint.rest.controller.validator.EmailRestValidator;
 import pro.craftlab.voucher.endpoint.rest.model.CreateVoucher;
 import pro.craftlab.voucher.endpoint.rest.model.Voucher;
-import pro.craftlab.voucher.repository.function.EmailValidationSupplier;
 import pro.craftlab.voucher.repository.model.Customer;
 import pro.craftlab.voucher.repository.model.exception.*;
 import pro.craftlab.voucher.service.CustomerService;
@@ -24,9 +24,9 @@ import pro.craftlab.voucher.service.VoucherService;
 
 class CustomerControllerTest {
   CustomerService customerServiceMock = mock();
-  EmailValidationSupplier emailValidationSupplier = mock();
+  EmailRestValidator emailRestValidator = mock();
   VoucherService voucherServiceMock = mock();
-  CustomerRestValidator customerRestValidator = new CustomerRestValidator(emailValidationSupplier);
+  CustomerRestValidator customerRestValidator = new CustomerRestValidator(emailRestValidator);
   CustomerRestMapper customerRestMapper = new CustomerRestMapper(customerRestValidator);
   VoucherRestMapper voucherRestMapper = new VoucherRestMapper();
   CustomerController subject =
@@ -98,23 +98,20 @@ class CustomerControllerTest {
   @Test
   void update_customers_ok() {
     var customerDetails =
-        List.of(
-            new pro.craftlab.voucher.endpoint.rest.model.Customer()
-                .id("customerId")
-                .name("Paul")
-                .mail("paul@gmail.com"));
+        new pro.craftlab.voucher.endpoint.rest.model.Customer()
+            .id("customerId")
+            .name("Paul")
+            .mail("paul@gmail.com");
 
-    when(emailValidationSupplier.isValidEmail(anyString()))
-        .thenAnswer(
-            invocation -> {
-              String email = invocation.getArgument(0);
-              return email != null && email.matches("^[\\w+_.-]+@gmail\\.com$");
-            });
+    doNothing()
+        .when(emailRestValidator)
+        .accept(any(pro.craftlab.voucher.endpoint.rest.model.Customer.class));
 
     when(customerServiceMock.saveAll(any()))
         .thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
 
-    var actual = subject.saveCustomers(customerDetails);
-    assertEquals(customerDetails, actual);
+    var actual = subject.saveCustomers(List.of(customerDetails));
+
+    assertEquals(List.of(customerDetails), actual);
   }
 }
