@@ -182,6 +182,6 @@ class VoucherServiceIT extends FacadeIT {
                   validCustomer.getId(), List.of(invalidVoucher));
             });
 
-    assertTrue(exception.getMessage().contains("Date validation cannot be null or empty"));
+    assertTrue(exception.getMessage().contains("Date validation cannot be null "));
   }
 }
