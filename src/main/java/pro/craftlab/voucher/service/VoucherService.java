@@ -8,8 +8,10 @@ import pro.craftlab.voucher.endpoint.rest.model.CreateVoucher;
 import pro.craftlab.voucher.repository.CustomerRepository;
 import pro.craftlab.voucher.repository.VoucherRepository;
 import pro.craftlab.voucher.repository.function.VoucherCodeGenerator;
+import pro.craftlab.voucher.repository.function.VoucherValidation;
 import pro.craftlab.voucher.repository.model.Customer;
 import pro.craftlab.voucher.repository.model.Voucher;
+import pro.craftlab.voucher.repository.model.exception.BadRequestException;
 import pro.craftlab.voucher.repository.model.exception.NotFoundException;
 
 @Service
@@ -18,6 +20,7 @@ public class VoucherService {
   private final VoucherRepository voucherRepository;
   private final CustomerRepository customerRepository;
   private final VoucherCodeGenerator voucherCodeGenerator;
+  private final VoucherValidation dateValidation;
 
   public Voucher generateVoucherCodeForCustomer(
       String idCustomer, List<CreateVoucher> createVouchers) {
@@ -31,6 +34,10 @@ public class VoucherService {
         createVouchers.stream()
             .findFirst()
             .orElseThrow(() -> new NotFoundException("No vouchers find"));
+
+    if (!dateValidation.isValidDate(createVoucher.getValidationDatetime())) {
+      throw new BadRequestException("Date Validation invalid");
+    }
 
     String code = voucherCodeGenerator.get();
     return voucherRepository.save(

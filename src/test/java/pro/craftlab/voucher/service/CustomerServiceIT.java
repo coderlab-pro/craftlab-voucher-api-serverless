@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import pro.craftlab.voucher.conf.FacadeIT;
 import pro.craftlab.voucher.repository.model.Customer;
+import pro.craftlab.voucher.repository.model.exception.BadRequestException;
 
 @Testcontainers
 class CustomerServiceIT extends FacadeIT {
@@ -31,7 +32,7 @@ class CustomerServiceIT extends FacadeIT {
     return Customer.builder()
         .id("customer-id-1")
         .name("Paul")
-        .mail("paulcom")
+        .mail("paul@gmail.com")
         .vouchers(Set.of())
         .build();
   }
@@ -54,5 +55,19 @@ class CustomerServiceIT extends FacadeIT {
     Customer actual = subject.getCustomerById(expectedCustomer.getId());
 
     assertEquals(expectedCustomer, actual);
+  }
+
+  @Test
+  void save_customer_with_missing_information() {
+    Customer invalidCustomer =
+        Customer.builder().id("customer-id-1").name("jean").mail(null).vouchers(Set.of()).build();
+
+    BadRequestException exception =
+        assertThrows(
+            BadRequestException.class,
+            () -> {
+              subject.saveAll(List.of(invalidCustomer));
+            });
+    assertTrue(exception.getMessage().contains("Invalid email address"));
   }
 }
