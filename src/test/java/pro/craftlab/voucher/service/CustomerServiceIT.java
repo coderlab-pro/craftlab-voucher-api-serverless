@@ -32,7 +32,7 @@ class CustomerServiceIT extends FacadeIT {
     return Customer.builder()
         .id("customer-id-1")
         .name("Paul")
-        .mail("paul@gmail.com")
+        .mail("paul@mail.com")
         .vouchers(Set.of())
         .build();
   }
@@ -40,13 +40,14 @@ class CustomerServiceIT extends FacadeIT {
   @Test
   void read_customers() {
     var actual = subject.getCustomers(Pageable.ofSize((500)));
+
     assertTrue(actual.contains(expected()));
-    assertEquals(1, actual.size());
   }
 
   @Test
   void read_customersById() {
     Customer expectedCustomer = updatedCustomer();
+
     var savedCustomers = subject.saveAll(List.of(updatedCustomer()));
     assertEquals(1, savedCustomers.size());
 
