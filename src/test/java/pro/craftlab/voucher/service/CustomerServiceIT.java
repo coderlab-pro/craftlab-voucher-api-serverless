@@ -58,7 +58,7 @@ class CustomerServiceIT extends FacadeIT {
   @Test
   void save_customer_with_missing_information() {
     Customer invalidCustomer =
-        Customer.builder().id("customer-id-1").name("jean").mail(null).vouchers(Set.of()).build();
+        Customer.builder().id("customer-id-1").name("jean").mail("mail").vouchers(Set.of()).build();
     ApiException exception =
         assertThrows(
             ApiException.class,
@@ -66,6 +66,6 @@ class CustomerServiceIT extends FacadeIT {
               subject.saveAll(List.of(invalidCustomer));
             });
 
-    assertTrue(exception.getMessage().contains("Email cannot be null or empty"));
+    assertTrue(exception.getMessage().contains("Email is not valid"));
   }
 }
