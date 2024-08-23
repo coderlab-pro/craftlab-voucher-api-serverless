@@ -14,6 +14,8 @@ import pro.craftlab.voucher.conf.FacadeIT;
 import pro.craftlab.voucher.endpoint.rest.model.CreateVoucher;
 import pro.craftlab.voucher.repository.model.Customer;
 import pro.craftlab.voucher.repository.model.Voucher;
+import pro.craftlab.voucher.repository.model.exception.ApiException;
+import pro.craftlab.voucher.repository.model.exception.NotFoundException;
 
 @Testcontainers
 class VoucherServiceIT extends FacadeIT {
@@ -61,13 +63,15 @@ class VoucherServiceIT extends FacadeIT {
     CreateVoucher createVoucher = new CreateVoucher();
     createVoucher.setValidationDatetime(Instant.now().plus(Duration.ofDays(30)));
     createVoucher.setCreationDatetime(Instant.now());
-    var savedCustomers = subject.saveAll(List.of(updatedCustomer()));
-    for (Customer newCustomers : savedCustomers) {
-      var actual =
+    Customer customer = updatedCustomer();
+    List<Customer> savedCustomers = subject.saveAll(List.of(customer));
+    for (Customer newCustomer : savedCustomers) {
+      Voucher actual =
           voucherService.generateVoucherCodeForCustomer(
-              newCustomers.getId(), List.of(createVoucher));
+              newCustomer.getId(), List.of(createVoucher));
 
-      assertEquals(10, actual.getCode().length());
+      assertNotNull(actual, "Voucher should not be null");
+      assertEquals(10, actual.getCode().length(), "Voucher code length should be 10 characters");
     }
   }
 
@@ -78,11 +82,96 @@ class VoucherServiceIT extends FacadeIT {
     createVoucher.setCreationDatetime(Instant.now());
     Customer customer = expected();
     subject.saveAll(List.of(customer));
-    voucherService.generateVoucherCodeForCustomer(customer.getId(), List.of(createVoucher));
-    Voucher actual =
+    Voucher firstVoucher =
+        voucherService.generateVoucherCodeForCustomer(customer.getId(), List.of(createVoucher));
+    assertNotNull(firstVoucher);
+    Voucher secondVoucher =
         voucherService.generateVoucherCodeForCustomer(customer.getId(), List.of(createVoucher));
 
+    assertNotNull(secondVoucher);
+
+    Customer updatedCustomer = subject.getCustomerById(customer.getId());
+    int voucherCount = updatedCustomer.getVouchers().size();
+    assertEquals(2, voucherCount, "Customer should have 2 vouchers generated.");
+  }
+
+  @Test
+  void save_customers_and_manage_invalid_customer() {
+    CreateVoucher createVoucher = new CreateVoucher();
+    createVoucher.setValidationDatetime(Instant.now().plus(Duration.ofDays(30)));
+    createVoucher.setCreationDatetime(Instant.now());
+    Customer validCustomer = updatedCustomer();
+    Customer invalidCustomer =
+        Customer.builder()
+            .id("invalidCustomerId")
+            .name("paul")
+            .mail("invalid-email")
+            .vouchers(Set.of())
+            .build();
+    List<Customer> savedCustomers = subject.saveAll(List.of(validCustomer));
+    Voucher actual =
+        voucherService.generateVoucherCodeForCustomer(
+            validCustomer.getId(), List.of(createVoucher));
+    ApiException exception =
+        assertThrows(
+            ApiException.class,
+            () -> {
+              subject.saveAll(List.of(invalidCustomer));
+            });
+
     assertNotNull(actual);
-    assertEquals(2, subject.getCustomerById(customer.getId()).getVouchers().size());
+    assertEquals(10, actual.getCode().length());
+    assertTrue(exception.getMessage().contains("Email is not valid"), "IEmail is not valid");
+  }
+
+  @Test
+  void generate_voucher_for_nonexistent_customer() {
+    CreateVoucher createVoucher = new CreateVoucher();
+    createVoucher.setValidationDatetime(Instant.now().plus(Duration.ofDays(30)));
+    createVoucher.setCreationDatetime(Instant.now());
+    NotFoundException exception =
+        assertThrows(
+            NotFoundException.class,
+            () -> {
+              voucherService.generateVoucherCodeForCustomer("noneCustomer", List.of(createVoucher));
+            });
+
+    assertTrue(exception.getMessage().contains("Customer not found"));
+  }
+
+  @Test
+  void generate_voucher_for_customer_with_invalid_data() {
+    CreateVoucher invalidVoucher = new CreateVoucher();
+    invalidVoucher.setValidationDatetime(Instant.now().plus(Duration.ofDays(-30)));
+    invalidVoucher.setCreationDatetime(Instant.now());
+    Customer validCustomer = updatedCustomer();
+    subject.saveAll(List.of(validCustomer));
+    ApiException exception =
+        assertThrows(
+            ApiException.class,
+            () -> {
+              voucherService.generateVoucherCodeForCustomer(
+                  validCustomer.getId(), List.of(invalidVoucher));
+            });
+
+    assertTrue(exception.getMessage().contains("Date Validation invalid"));
+  }
+
+  @Test
+  void validationDate_exception() {
+    CreateVoucher invalidVoucher = new CreateVoucher();
+    invalidVoucher.setValidationDatetime(null);
+    invalidVoucher.setCreationDatetime(Instant.now());
+    Customer validCustomer = updatedCustomer();
+    subject.saveAll(List.of(validCustomer));
+    ApiException exception =
+        assertThrows(
+            ApiException.class,
+            () -> {
+              voucherService.generateVoucherCodeForCustomer(
+                  validCustomer.getId(), List.of(invalidVoucher));
+            });
+
+    assertTrue(exception.getMessage().contains("Date validation cannot be null "));
   }
 }

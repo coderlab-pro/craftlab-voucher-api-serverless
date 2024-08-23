@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import pro.craftlab.voucher.conf.FacadeIT;
 import pro.craftlab.voucher.repository.model.Customer;
+import pro.craftlab.voucher.repository.model.exception.ApiException;
 
 @Testcontainers
 class CustomerServiceIT extends FacadeIT {
@@ -39,7 +40,6 @@ class CustomerServiceIT extends FacadeIT {
   @Test
   void read_customers() {
     var actual = subject.getCustomers(Pageable.ofSize((500)));
-
     assertTrue(actual.contains(expected()));
     assertEquals(1, actual.size());
   }
@@ -53,5 +53,19 @@ class CustomerServiceIT extends FacadeIT {
     Customer actual = subject.getCustomerById(expectedCustomer.getId());
 
     assertEquals(expectedCustomer, actual);
+  }
+
+  @Test
+  void save_customer_with_missing_information() {
+    Customer invalidCustomer =
+        Customer.builder().id("customer-id-1").name("jean").mail("mail").vouchers(Set.of()).build();
+    ApiException exception =
+        assertThrows(
+            ApiException.class,
+            () -> {
+              subject.saveAll(List.of(invalidCustomer));
+            });
+
+    assertTrue(exception.getMessage().contains("Email is not valid"));
   }
 }

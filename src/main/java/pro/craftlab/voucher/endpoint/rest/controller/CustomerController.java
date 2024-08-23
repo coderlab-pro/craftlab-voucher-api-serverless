@@ -22,7 +22,6 @@ public class CustomerController {
   private VoucherService voucherGeneratorService;
   private VoucherRestMapper voucherRestMapper;
 
-  // TODO: add controller test
   @GetMapping("/customers")
   public List<Customer> getCustomers(
       @RequestParam(required = false) Integer page,
