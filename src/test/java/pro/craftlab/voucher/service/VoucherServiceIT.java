@@ -2,12 +2,15 @@ package pro.craftlab.voucher.service;
 
 import static java.time.Instant.now;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import pro.craftlab.voucher.conf.FacadeIT;
 import pro.craftlab.voucher.endpoint.rest.model.CreateVoucher;
@@ -16,7 +19,7 @@ import pro.craftlab.voucher.repository.model.Voucher;
 import pro.craftlab.voucher.repository.model.exception.ApiException;
 import pro.craftlab.voucher.repository.model.exception.NotFoundException;
 
-@Testcontainers
+@Transactional(isolation = SERIALIZABLE)
 class VoucherServiceIT extends FacadeIT {
   @Autowired CustomerService customerService;
   @Autowired VoucherService subject;
