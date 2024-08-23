@@ -112,8 +112,6 @@ class VoucherServiceIT extends FacadeIT {
     Voucher actual =
         voucherService.generateVoucherCodeForCustomer(
             validCustomer.getId(), List.of(createVoucher));
-    assertNotNull(actual);
-    assertEquals(10, actual.getCode().length());
     ApiException exception =
         assertThrows(
             ApiException.class,
@@ -121,6 +119,8 @@ class VoucherServiceIT extends FacadeIT {
               subject.saveAll(List.of(invalidCustomer));
             });
 
+    assertNotNull(actual);
+    assertEquals(10, actual.getCode().length());
     assertTrue(exception.getMessage().contains("Email is not valid"), "IEmail is not valid");
   }
 
