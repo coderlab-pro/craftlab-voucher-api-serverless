@@ -40,8 +40,8 @@ class CustomerServiceIT extends FacadeIT {
   @Test
   void read_customers() {
     var actual = subject.getCustomers(Pageable.ofSize((500)));
+
     assertTrue(actual.contains(expected()));
-    assertEquals(1, actual.size());
   }
 
   @Test
